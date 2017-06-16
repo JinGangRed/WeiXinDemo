@@ -11,14 +11,24 @@ namespace WebApplication1.Controllers.API
 {
     public class ConfigController : ApiController
     {
-        public WXConfig getConfig()
+        public WXConfig getConfig(string url)
         {
-            WXConfig config = new WXConfig();
-
-            config.APPID = WebConfigHelper.getAppSeeting("appId");
-            config.NonceStr = WebConfigHelper.getAppSeeting("timestamp");
-            config.Signature = WebConfigHelper.getAppSeeting("nonceStr");
-            config.Timestamp = WebConfigHelper.getAppSeeting("signature");
+            string nonceStr = WebConfigHelper.getAppSeeting(ConstantData.noncestr.ToString());
+            string timestamp =  WebConfigHelper.getAppSeeting(ConstantData.timestamp.ToString());
+            Dictionary<string, string> wxConfig = new Dictionary<string, string>();
+            wxConfig.Add("noncestr", nonceStr);
+            wxConfig.Add("timestamp",timestamp);
+            wxConfig.Add("url", url);
+            WeiXinHelper weiXinHelper = new WeiXinHelper();
+            string signature = weiXinHelper.getSignature(wxConfig);
+            //WeiXinHelper.getAccessToken();
+            WXConfig config = new WXConfig
+            {
+                APPID = WebConfigHelper.getAppSeeting(ConstantData.cropid.ToString()),
+                Timestamp = timestamp,
+                NonceStr = nonceStr,
+                Signature = signature
+            };
             return config;
         }
     }
